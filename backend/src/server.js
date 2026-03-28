@@ -16,7 +16,18 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 app.use(helmet());
-app.use(cors({ origin: config.frontendUrl, credentials: true }));
+const allowedOrigins = config.frontendUrl.split(',').map(url => url.trim());
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl) or if origin is in the allowed list
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS Error: Origin not allowed. Add it to FRONTEND_URL in .env'));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 // Routes

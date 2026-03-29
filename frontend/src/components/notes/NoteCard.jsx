@@ -20,27 +20,27 @@ export default function NoteCard({ note, onDelete }) {
       className="card p-5 cursor-pointer group"
       onClick={() => note.status === 'READY' && navigate(`/notes/${note.id}`)}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center">
-          <FileText className="w-5 h-5 text-brand-500" />
+      <div className="flex items-start justify-between mb-4">
+        <div className="w-12 h-12 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
+          <FileText className="w-6 h-6 text-brand-400" />
         </div>
         <button
           onClick={(e) => { e.stopPropagation(); onDelete(note.id); }}
           className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all"
           title="Delete note"
         >
-          <Trash2 className="w-4 h-4" />
+          <Trash2 className="w-4 h-4 text-red-400" />
         </button>
       </div>
 
-      <h3 className="font-semibold text-slate-800 mb-1 truncate">{note.title}</h3>
-      <p className="text-xs text-slate-400 mb-3">{note.fileName}</p>
+      <h3 className="font-semibold text-white mb-1.5 truncate font-heading text-lg">{note.title}</h3>
+      <p className="text-sm text-slate-400 mb-4 truncate">{note.fileName}</p>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 text-xs text-slate-500">
-          <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{date}</span>
+      <div className="flex items-center justify-between mt-auto">
+        <div className="flex items-center gap-4 text-xs text-slate-500 font-medium">
+          <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" />{date}</span>
           {note._count?.chunks > 0 && (
-            <span className="flex items-center gap-1"><Layers className="w-3 h-3" />{note._count.chunks} chunks</span>
+            <span className="flex items-center gap-1.5"><Layers className="w-3.5 h-3.5" />{note._count.chunks} chunks</span>
           )}
         </div>
         <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1 ${status.color}`}>

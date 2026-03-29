@@ -56,25 +56,25 @@ export default function NoteWorkspace() {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-bold text-slate-900 truncate">{note.title}</h1>
-          <div className="flex items-center gap-3 text-sm text-slate-500 mt-0.5">
-            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{date}</span>
-            <span className="flex items-center gap-1"><Layers className="w-3.5 h-3.5" />{note._count?.chunks || 0} chunks</span>
-            <span className="uppercase text-xs font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-500">{note.fileType}</span>
+          <h1 className="text-2xl font-bold font-heading text-white truncate drop-shadow-sm">{note.title}</h1>
+          <div className="flex items-center gap-4 text-sm text-slate-400 mt-1 font-medium">
+            <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" />{date}</span>
+            <span className="flex items-center gap-1.5"><Layers className="w-4 h-4" />{note._count?.chunks || 0} chunks</span>
+            <span className="uppercase text-xs font-bold px-2 py-0.5 rounded bg-brand-500/10 text-brand-300 border border-brand-500/20">{note.fileType}</span>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-slate-100 rounded-xl mb-4 w-fit">
+      <div className="flex gap-2 p-1.5 glass-panel rounded-xl mb-6 w-fit">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
               activeTab === tab.id
-                ? 'bg-white text-brand-600 shadow-sm'
-                : 'text-slate-500 hover:text-slate-700'
+                ? 'bg-brand-500/20 text-brand-300 shadow-[0_0_10px_rgba(139,92,246,0.2)] border border-brand-500/30'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -88,9 +88,9 @@ export default function NoteWorkspace() {
         {activeTab === 'chat' && <ChatPanel noteId={note.id} />}
         {activeTab === 'quiz' && <QuizPanel noteId={note.id} />}
         {activeTab === 'info' && (
-          <div className="p-6 space-y-4">
-            <h3 className="text-lg font-semibold text-slate-800">Note Details</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="p-8 space-y-6">
+            <h3 className="text-xl font-semibold font-heading text-white">Note Details</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
                 { label: 'File Name', value: note.fileName, icon: FileText },
                 { label: 'File Type', value: note.fileType.toUpperCase(), icon: Hash },
@@ -100,13 +100,13 @@ export default function NoteWorkspace() {
                 { label: 'Chat Messages', value: note._count?.chatMessages || 0, icon: MessageSquare },
                 { label: 'Quizzes Generated', value: note._count?.quizzes || 0, icon: Sparkles },
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
-                  <div className="w-9 h-9 rounded-lg bg-brand-100 flex items-center justify-center">
-                    <item.icon className="w-4 h-4 text-brand-600" />
+                <div key={i} className="flex items-center gap-4 p-5 glass-panel rounded-xl hover:border-brand-500/30 transition-colors">
+                  <div className="w-10 h-10 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center shadow-[0_0_10px_rgba(139,92,246,0.1)]">
+                    <item.icon className="w-5 h-5 text-brand-400" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500">{item.label}</p>
-                    <p className="text-sm font-semibold text-slate-800">{item.value}</p>
+                    <p className="text-xs text-slate-400 mb-0.5 uppercase tracking-wider font-semibold">{item.label}</p>
+                    <p className="text-base font-semibold text-white">{item.value}</p>
                   </div>
                 </div>
               ))}

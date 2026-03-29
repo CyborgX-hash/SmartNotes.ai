@@ -51,18 +51,18 @@ export default function UploadModal({ isOpen, onClose, onUploaded }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-slide-up" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold text-slate-800">Upload Notes</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in" onClick={onClose}>
+      <div className="glass-panel rounded-2xl w-full max-w-md p-6 border border-white/10 animate-slide-up" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold font-heading text-white">Upload Notes</h2>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div
-          className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
-            dragOver ? 'border-brand-400 bg-brand-50' : 'border-slate-200 hover:border-brand-300 hover:bg-slate-50'
+          className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 ${
+            dragOver ? 'border-brand-500 bg-brand-500/10' : 'border-white/10 hover:border-brand-500/30 hover:bg-white/5'
           }`}
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
@@ -76,35 +76,37 @@ export default function UploadModal({ isOpen, onClose, onUploaded }) {
             className="hidden"
             onChange={(e) => e.target.files[0] && handleFile(e.target.files[0])}
           />
-          <Upload className="w-8 h-8 text-brand-400 mx-auto mb-3" />
-          <p className="text-sm font-medium text-slate-700 mb-1">
+          <div className="w-14 h-14 rounded-full bg-brand-500/10 flex items-center justify-center mx-auto mb-4 border border-brand-500/20 shadow-[0_0_15px_rgba(139,92,246,0.15)]">
+            <Upload className="w-6 h-6 text-brand-400" />
+          </div>
+          <p className="text-sm font-medium text-slate-200 mb-1.5 font-heading">
             {file ? file.name : 'Drop your file here or click to browse'}
           </p>
-          <p className="text-xs text-slate-400">PDF or TXT, up to 10MB</p>
+          <p className="text-xs text-slate-500">PDF or TXT, up to 10MB</p>
         </div>
 
         {file && (
-          <div className="mt-3 flex items-center gap-2 p-3 bg-brand-50 rounded-lg">
-            <FileText className="w-4 h-4 text-brand-500" />
-            <span className="text-sm text-slate-700 truncate flex-1">{file.name}</span>
-            <span className="text-xs text-slate-400">{(file.size / 1024).toFixed(0)} KB</span>
-            <button onClick={() => setFile(null)} className="text-slate-400 hover:text-red-500">
+          <div className="mt-4 flex items-center gap-3 p-3 bg-brand-500/10 border border-brand-500/20 rounded-lg">
+            <FileText className="w-5 h-5 text-brand-400" />
+            <span className="text-sm text-slate-200 truncate flex-1 font-medium">{file.name}</span>
+            <span className="text-xs text-brand-300 bg-brand-500/20 px-2 py-1 rounded-md">{(file.size / 1024).toFixed(0)} KB</span>
+            <button onClick={() => setFile(null)} className="text-slate-400 hover:text-red-400 p-1 rounded-md hover:bg-white/10 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
         )}
 
         {error && (
-          <div className="mt-3 flex items-center gap-2 p-3 bg-red-50 rounded-lg text-sm text-red-600">
+          <div className="mt-4 flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             {error}
           </div>
         )}
 
-        <div className="flex gap-3 mt-5">
+        <div className="flex gap-4 mt-6">
           <button onClick={onClose} className="btn-secondary flex-1" disabled={uploading}>Cancel</button>
           <button onClick={handleUpload} className="btn-primary flex-1 flex items-center justify-center gap-2" disabled={!file || uploading}>
-            {uploading ? <><Spinner size="sm" className="text-white" /> Processing...</> : 'Upload'}
+            {uploading ? <><Spinner size="sm" className="text-white" /> Processing...</> : 'Upload Note'}
           </button>
         </div>
       </div>

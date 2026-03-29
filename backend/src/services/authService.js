@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const prisma = require('../lib/prisma');
 const config = require('../config');
 
-const SALT_ROUNDS = 12;
+const SALT_ROUNDS = 10;
 
 async function signup({ email, password, name }) {
   const existing = await prisma.user.findUnique({ where: { email } });

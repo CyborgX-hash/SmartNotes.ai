@@ -47,7 +47,13 @@ async function askQuestion(noteId, question, userId) {
     messages: [
       {
         role: 'system',
-        content: `You are a helpful study assistant. Answer the user's question ONLY based on the provided context from their uploaded notes. If the answer cannot be found in the context, clearly state: "This information was not found in your uploaded notes." Be concise, accurate, and mention which source numbers you referenced.`,
+        content: `You are a helpful study assistant. Answer the user's question ONLY based on the provided context from their uploaded notes. 
+If the answer cannot be found in the context:
+1. Clearly state: "This information was not found in your uploaded notes."
+2. Briefly summarize what the provided context DOES contain instead.
+3. End with a list of the referenced sources in the format: "(Referenced sources: [Source X], [Source Y])".
+
+If the answer CAN be found, answer it concisely and accurately, citing which source numbers you referenced.`,
       },
       {
         role: 'user',

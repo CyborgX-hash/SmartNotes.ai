@@ -22,16 +22,19 @@ async function generateQuiz(noteId, userId, { difficulty, numQuestions }) {
 
   const sampled = chunks
     .sort(() => Math.random() - 0.5)
-    .slice(0, Math.min(10, chunks.length));
+    .slice(0, Math.min(5, chunks.length));
 
   const context = sampled.map((c) => c.content).join('\n\n');
 
+  // Use a fast model for quiz generation (structured JSON output)
+  const quizModel = config.groqQuizModel || 'llama-3.1-8b-instant';
+
   const completion = await groq.chat.completions.create({
-    model: config.groqModel,
+    model: quizModel,
     messages: [
       {
         role: 'system',
-        content: `You are an expert quiz creator for students. Generate exactly ${numQuestions} ${difficulty}-level practice questions based ONLY on the provided study notes. Return ONLY a valid JSON array with no markdown formatting, no code blocks, no extra text. Each object must have: "question" (string), "answer" (string), "options" (array of exactly 4 strings including the correct answer). Questions should be clear, educational, and appropriate for ${difficulty} difficulty.`,
+        content: `You are an expert quiz creator. Generate exactly ${numQuestions} ${difficulty}-level MCQ questions from the study notes below. Return ONLY a valid JSON array. No markdown, no code blocks, no extra text. Each object: {"question": "...", "answer": "...", "options": ["...", "...", "...", "..."]}. The correct answer must be one of the 4 options. Be concise.`,
       },
       {
         role: 'user',
@@ -39,7 +42,7 @@ async function generateQuiz(noteId, userId, { difficulty, numQuestions }) {
       },
     ],
     temperature: 0.7,
-    max_tokens: 2048,
+    max_tokens: 1200,
   });
 
   let questions;

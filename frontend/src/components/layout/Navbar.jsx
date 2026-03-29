@@ -20,7 +20,7 @@ export default function Navbar() {
               <Brain className="w-5 h-5 text-white" />
             </div>
             <span className="text-lg font-bold text-slate-800">
-              AI Notes<span className="text-brand-600">.ai</span>
+              AnalyseNotes<span className="text-brand-600">.ai</span>
             </span>
           </Link>
 

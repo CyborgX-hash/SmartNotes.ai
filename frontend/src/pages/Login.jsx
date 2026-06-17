@@ -2,8 +2,14 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { login as loginApi } from '../api/auth';
-import { Brain, AlertCircle } from 'lucide-react';
+import { Terminal, AlertCircle } from 'lucide-react';
 import Spinner from '../components/ui/Spinner';
+
+const Screw = () => (
+  <div className="w-2.5 h-2.5 rounded-full bg-background border border-borderDark flex items-center justify-center shadow-[inset_1px_1px_2.5px_rgba(0,0,0,0.2)] flex-shrink-0">
+    <div className="w-1 h-[1px] bg-borderDark/70 rotate-[35deg]" />
+  </div>
+);
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -21,29 +27,34 @@ export default function Login() {
       loginUser(res.data.user, res.data.token);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.error || err.response?.data?.errors?.[0]?.msg || 'Login failed');
+      setError(err.response?.data?.error || err.response?.data?.errors?.[0]?.msg || 'Authentication failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
-      <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] bg-brand-600/20 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[20%] left-[20%] w-[30%] h-[30%] bg-accent-500/10 rounded-full blur-[100px] pointer-events-none" />
-
+    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden bg-background">
       <div className="w-full max-w-md animate-slide-up relative z-10">
+        
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(139,92,246,0.5)]">
-            <Brain className="w-7 h-7 text-white" />
+          <div className="w-12 h-12 bg-background flex items-center justify-center mx-auto mb-5 rounded-full shadow-[var(--shadow-card)] border border-white/50">
+            <Terminal className="w-5 h-5 text-accent" />
           </div>
-          <h1 className="text-3xl font-bold font-heading text-white">Welcome back</h1>
-          <p className="text-sm text-slate-400 mt-2">Sign in to your account</p>
+          <h1 className="text-xl font-bold tracking-tight text-foreground font-mono select-none uppercase">AUTHENTICATION</h1>
+          <p className="stamped-label mt-1.5 select-none">AWAITING SECURITY ACCESS CODE</p>
         </div>
 
-        <div className="glass-panel rounded-2xl p-8 border border-white/10">
+        <div className="bg-background rounded-2xl shadow-[var(--shadow-card)] border border-white/50 p-8 relative">
+          
+          {/* Deck panel screws */}
+          <div className="absolute top-2.5 left-2.5"><Screw /></div>
+          <div className="absolute top-2.5 right-2.5"><Screw /></div>
+          <div className="absolute bottom-2.5 left-2.5"><Screw /></div>
+          <div className="absolute bottom-2.5 right-2.5"><Screw /></div>
+
           {error && (
-            <div className="flex items-center gap-2 p-3 mb-6 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
+            <div className="flex items-center gap-2.5 p-3.5 mb-6 bg-background shadow-[var(--shadow-recessed)] border border-accent/20 rounded-xl text-xs font-mono font-bold text-accent">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               {error}
             </div>
@@ -51,36 +62,36 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+              <label className="stamped-label mb-2 block">USER_EMAIL</label>
               <input
                 type="email"
-                className="input-field"
-                placeholder="you@example.com"
+                className="input-field text-xs pl-5"
+                placeholder="usr@system.local"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+              <label className="stamped-label mb-2 block">ACCESS_CODE</label>
               <input
                 type="password"
-                className="input-field"
+                className="input-field text-xs pl-5"
                 placeholder="••••••••"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 required
               />
             </div>
-            <button type="submit" disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2 py-3.5 mt-2">
-              {loading ? <><Spinner size="sm" className="text-white" /> Signing in...</> : 'Sign In'}
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3.5 mt-6 text-xs font-mono font-bold">
+              {loading ? <><Spinner size="sm" className="text-white animate-spin" /> CONNECTING...</> : 'INITIALIZE AUTH'}
             </button>
           </form>
         </div>
 
-        <p className="text-center text-sm text-slate-400 mt-8">
-          Don't have an account?{' '}
-          <Link to="/signup" className="text-brand-400 hover:text-brand-300 font-medium">Create one</Link>
+        <p className="text-center text-xs font-mono text-mutedForeground mt-8 tracking-widest uppercase">
+          NO INSTALLED ID?{' '}
+          <Link to="/signup" className="text-accent font-bold hover:underline">CREATE ACCOUNT</Link>
         </p>
       </div>
     </div>

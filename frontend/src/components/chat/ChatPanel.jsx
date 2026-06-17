@@ -1,8 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, Bot, User, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
+import { Send, Terminal, User, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
 import { askQuestion, getChatHistory } from '../../api/chat';
 import Spinner from '../ui/Spinner';
 import EmptyState from '../ui/EmptyState';
+
+const Screw = () => (
+  <div className="w-2.5 h-2.5 rounded-full bg-background border border-borderDark flex items-center justify-center shadow-[inset_1px_1px_2.5px_rgba(0,0,0,0.2)] flex-shrink-0">
+    <div className="w-1 h-[1px] bg-borderDark/70 rotate-[35deg]" />
+  </div>
+);
 
 export default function ChatPanel({ noteId }) {
   const [messages, setMessages] = useState([]);
@@ -38,7 +44,7 @@ export default function ChatPanel({ noteId }) {
     } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: 'Sorry, something went wrong. Please try again.', id: Date.now() + 1 },
+        { role: 'assistant', content: 'SYSTEM ERROR: UNABLE TO FORMULATE RESPONSE.', id: Date.now() + 1 },
       ]);
     } finally {
       setLoading(false);
@@ -50,44 +56,55 @@ export default function ChatPanel({ noteId }) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#0a0a0f]/50">
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+    <div className="flex flex-col h-full bg-background relative z-0">
+      
+      {/* Messages area */}
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 relative z-10 scrollbar-hide max-h-[50vh]">
         {messages.length === 0 ? (
           <EmptyState
-            icon={Bot}
-            title="Ask anything about your notes"
-            description="Your AI assistant will find answers from your uploaded content."
+            icon={Terminal}
+            title="AWAITING QUERY"
+            description="ENTER A PARAMETER BELOW TO INTERROGATE THE DOCUMENT MODULE."
           />
         ) : (
           messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)
         )}
+        
         {loading && (
-          <div className="flex items-center gap-3 p-4">
-            <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center shadow-[0_0_15px_rgba(139,92,246,0.15)] flex-shrink-0">
-              <Bot className="w-5 h-5 text-brand-400" />
+          <div className="flex items-center gap-4 p-2 animate-fade-in">
+            <div className="w-9 h-9 rounded-full bg-background flex items-center justify-center border border-white/50 shadow-[var(--shadow-card)] flex-shrink-0">
+              <Terminal className="w-4 h-4 text-accent" />
             </div>
-            <div className="flex gap-1.5 p-4 rounded-2xl bg-white/5 border border-white/5 rounded-tl-sm">
-              <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="flex gap-1.5 p-3 bg-background shadow-[var(--shadow-recessed)] rounded-xl border border-white/10 select-none">
+              <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" style={{ animationDelay: '0ms' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" style={{ animationDelay: '150ms' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         )}
         <div ref={bottomRef} />
       </div>
 
-      <div className="border-t border-white/10 p-4 sm:p-6 bg-[#050505]">
-        <div className="flex gap-3 max-w-4xl mx-auto">
+      {/* Input controller deck */}
+      <div className="border-t border-border/40 p-4 sm:p-6 bg-background shadow-[0_-4px_12px_-4px_rgba(186,190,204,0.4)] relative z-10">
+        <div className="absolute top-2 left-2"><Screw /></div>
+        <div className="absolute top-2 right-2"><Screw /></div>
+        
+        <div className="flex gap-3 max-w-4xl mx-auto relative pt-1">
           <input
-            className="input-field flex-1"
-            placeholder="Ask a question about your notes..."
+            className="input-field flex-1 text-xs"
+            placeholder="EXECUTE QUERY COMPILER..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
             disabled={loading}
           />
-          <button onClick={handleSend} disabled={!input.trim() || loading} className="btn-primary px-5 py-3 shadow-[0_0_15px_rgba(139,92,246,0.3)]">
-            <Send className="w-5 h-5" />
+          <button 
+            onClick={handleSend} 
+            disabled={!input.trim() || loading} 
+            className="btn-primary px-5 py-3 shadow-[var(--shadow-card)]"
+          >
+            <Send className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -101,34 +118,42 @@ function ChatMessage({ message }) {
 
   return (
     <div className={`flex gap-4 animate-slide-up ${isUser ? 'flex-row-reverse' : ''}`}>
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border ${
-        isUser ? 'bg-purple-500/10 border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]' : 'bg-brand-500/10 border-brand-500/20 shadow-[0_0_15px_rgba(139,92,246,0.15)]'
+      <div className={`w-9 h-9 rounded-full bg-background flex items-center justify-center border border-white/50 shadow-[var(--shadow-card)] flex-shrink-0 ${
+        isUser ? 'text-accent' : 'text-mutedForeground'
       }`}>
-        {isUser ? <User className="w-5 h-5 text-purple-400" /> : <Bot className="w-5 h-5 text-brand-400" />}
+        {isUser ? <User className="w-4 h-4" /> : <Terminal className="w-4 h-4" />}
       </div>
-      <div className={`max-w-[80%] ${isUser ? 'text-right' : ''}`}>
-        <div className={`rounded-2xl px-5 py-3.5 text-sm leading-relaxed ${
-          isUser ? 'bg-purple-600 text-white rounded-tr-sm shadow-[0_4px_15px_rgba(147,51,234,0.2)]' : 'glass-panel border border-white/10 text-slate-200 rounded-tl-sm'
+      
+      <div className={`max-w-[78%] flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
+        
+        {/* Skeuomorphic message bubble container */}
+        <div className={`p-4 text-xs font-mono rounded-2xl text-left border ${
+          isUser 
+            ? 'bg-background text-accent shadow-[var(--shadow-pressed)] border-white/10 font-bold' 
+            : 'bg-background text-foreground shadow-[var(--shadow-card)] border-white/40'
         }`}>
-          <p className="whitespace-pre-wrap">{message.content}</p>
+          <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
         </div>
+        
         {message.sources?.length > 0 && (
-          <div className="mt-3">
+          <div className="mt-2.5">
             <button
               onClick={() => setSourcesOpen(!sourcesOpen)}
-              className="flex items-center gap-1.5 text-xs text-brand-400 hover:text-brand-300 font-medium transition-colors"
+              className="flex items-center gap-1.5 text-[9px] font-mono font-bold tracking-widest text-accent hover:text-accent/80 transition-colors bg-background shadow-[var(--shadow-sharp)] px-2.5 py-1 rounded-lg border border-white/30"
             >
-              {sourcesOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-              <BookOpen className="w-3.5 h-3.5" />
-              {message.sources.length} source{message.sources.length !== 1 ? 's' : ''} used
+              {sourcesOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+              <BookOpen className="w-3 h-3" />
+              {message.sources.length} TRACE{message.sources.length !== 1 ? 'S' : ''} DETECTED
             </button>
             {sourcesOpen && (
-              <div className="mt-3 space-y-3">
+              <div className="mt-3 space-y-3 pl-1">
                 {message.sources.map((src, i) => (
-                  <div key={i} className="p-4 bg-black/40 rounded-xl text-xs text-slate-400 border border-brand-500/20 shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]">
-                    <span className="font-semibold text-brand-400 font-heading">Chunk {src.chunkIndex + 1}</span>
-                    <span className="text-slate-500 ml-2">({(src.similarity * 100).toFixed(0)}% match)</span>
-                    <p className="mt-2 line-clamp-4 leading-relaxed italic border-l-2 border-brand-500/30 pl-3">{src.content}</p>
+                  <div key={i} className="p-4 bg-background shadow-[var(--shadow-recessed)] text-[10px] text-mutedForeground font-mono rounded-xl border border-white/10 relative">
+                    <span className="font-bold text-accent tracking-widest uppercase">SECTOR {(src.chunkIndex + 1).toString().padStart(2, '0')}</span>
+                    <span className="text-[9px] ml-2 text-mutedForeground/80">[{(src.similarity * 100).toFixed(0)}% MATCH]</span>
+                    <p className="mt-2 leading-relaxed italic border-l border-accent/40 pl-3">
+                      {src.content}
+                    </p>
                   </div>
                 ))}
               </div>

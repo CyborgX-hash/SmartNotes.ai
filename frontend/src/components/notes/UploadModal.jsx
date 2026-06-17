@@ -3,6 +3,12 @@ import { Upload, X, FileText, AlertCircle } from 'lucide-react';
 import { uploadNote } from '../../api/notes';
 import Spinner from '../ui/Spinner';
 
+const Screw = () => (
+  <div className="w-2.5 h-2.5 rounded-full bg-background border border-borderDark flex items-center justify-center shadow-[inset_1px_1px_2.5px_rgba(0,0,0,0.2)] flex-shrink-0">
+    <div className="w-1 h-[1px] bg-borderDark/70 rotate-[35deg]" />
+  </div>
+);
+
 export default function UploadModal({ isOpen, onClose, onUploaded }) {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -16,11 +22,11 @@ export default function UploadModal({ isOpen, onClose, onUploaded }) {
     setError('');
     const allowed = ['application/pdf', 'text/plain'];
     if (!allowed.includes(f.type)) {
-      setError('Only PDF and TXT files are supported.');
+      setError('FORMAT NOT SUPPORTED. USE PDF/TXT.');
       return;
     }
     if (f.size > 10 * 1024 * 1024) {
-      setError('File size must be under 10MB.');
+      setError('PAYLOAD TOO LARGE. MAX SIZE: 10MB.');
       return;
     }
     setFile(f);
@@ -44,25 +50,36 @@ export default function UploadModal({ isOpen, onClose, onUploaded }) {
       onClose();
       setFile(null);
     } catch (err) {
-      setError(err.response?.data?.error || 'Upload failed. Please try again.');
+      setError(err.response?.data?.error || 'UPLOAD FAILED. RETRY OPERATION.');
     } finally {
       setUploading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in" onClick={onClose}>
-      <div className="glass-panel rounded-2xl w-full max-w-md p-6 border border-white/10 animate-slide-up" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold font-heading text-white">Upload Notes</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 transition-colors">
-            <X className="w-5 h-5" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/60 backdrop-blur-sm animate-fade-in" onClick={onClose}>
+      <div className="bg-background w-full max-w-md animate-slide-up shadow-[0_12px_40px_rgba(0,0,0,0.15)] rounded-2xl p-6 relative border border-white/50" onClick={(e) => e.stopPropagation()}>
+        
+        {/* Floating card corner screws */}
+        <div className="absolute top-2.5 left-2.5"><Screw /></div>
+        <div className="absolute top-2.5 right-2.5"><Screw /></div>
+        <div className="absolute bottom-2.5 left-2.5"><Screw /></div>
+        <div className="absolute bottom-2.5 right-2.5"><Screw /></div>
+
+        <div className="flex items-center justify-between mb-6 pt-1">
+          <h2 className="text-base font-bold font-mono tracking-widest text-foreground uppercase">UPLOAD_DATA</h2>
+          <button 
+            onClick={onClose} 
+            className="w-8 h-8 rounded-full bg-background flex items-center justify-center shadow-[var(--shadow-card)] border border-white/50 text-mutedForeground hover:text-accent active:translate-y-[1px] active:shadow-[var(--shadow-pressed)] transition-all"
+          >
+            <X className="w-4 h-4" />
           </button>
         </div>
 
+        {/* Recessed well dropzone */}
         <div
-          className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 ${
-            dragOver ? 'border-brand-500 bg-brand-500/10' : 'border-white/10 hover:border-brand-500/30 hover:bg-white/5'
+          className={`border border-dashed p-8 text-center cursor-pointer rounded-2xl transition-all duration-200 bg-background shadow-[var(--shadow-recessed)] ${
+            dragOver ? 'border-accent' : 'border-border/80 hover:border-accent/60'
           }`}
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
@@ -76,37 +93,46 @@ export default function UploadModal({ isOpen, onClose, onUploaded }) {
             className="hidden"
             onChange={(e) => e.target.files[0] && handleFile(e.target.files[0])}
           />
-          <div className="w-14 h-14 rounded-full bg-brand-500/10 flex items-center justify-center mx-auto mb-4 border border-brand-500/20 shadow-[0_0_15px_rgba(139,92,246,0.15)]">
-            <Upload className="w-6 h-6 text-brand-400" />
+          
+          <div className={`w-12 h-12 flex items-center justify-center mx-auto mb-4 border border-white/40 rounded-full transition-all duration-200 bg-background ${
+            dragOver ? 'shadow-[var(--shadow-pressed)]' : 'shadow-[var(--shadow-card)]'
+          }`}>
+            <Upload className="w-5 h-5 text-accent" />
           </div>
-          <p className="text-sm font-medium text-slate-200 mb-1.5 font-heading">
-            {file ? file.name : 'Drop your file here or click to browse'}
+          
+          <p className="text-xs font-mono font-bold text-foreground mb-1 tracking-wider">
+            {file ? file.name.toUpperCase() : 'AWAITING DATA INJECTION'}
           </p>
-          <p className="text-xs text-slate-500">PDF or TXT, up to 10MB</p>
+          <p className="text-[10px] font-mono text-mutedForeground tracking-widest uppercase">PDF_OR_TXT // LIMIT 10MB</p>
         </div>
 
         {file && (
-          <div className="mt-4 flex items-center gap-3 p-3 bg-brand-500/10 border border-brand-500/20 rounded-lg">
-            <FileText className="w-5 h-5 text-brand-400" />
-            <span className="text-sm text-slate-200 truncate flex-1 font-medium">{file.name}</span>
-            <span className="text-xs text-brand-300 bg-brand-500/20 px-2 py-1 rounded-md">{(file.size / 1024).toFixed(0)} KB</span>
-            <button onClick={() => setFile(null)} className="text-slate-400 hover:text-red-400 p-1 rounded-md hover:bg-white/10 transition-colors">
-              <X className="w-4 h-4" />
+          <div className="mt-4 flex items-center gap-3 p-3.5 bg-background shadow-[var(--shadow-card)] rounded-xl border border-white/40 font-mono">
+            <FileText className="w-4 h-4 text-accent" />
+            <span className="text-xs font-bold text-foreground truncate flex-1 uppercase tracking-wide">{file.name}</span>
+            <span className="text-[10px] font-bold text-accent bg-background px-2 py-0.5 rounded shadow-[var(--shadow-sharp)] border border-white/30">
+              {(file.size / 1024).toFixed(0)} KB
+            </span>
+            <button 
+              onClick={() => setFile(null)} 
+              className="text-mutedForeground hover:text-accent p-1 rounded-full bg-background shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-floating)] active:translate-y-[1px] active:shadow-[var(--shadow-pressed)] border border-white/30 transition-all"
+            >
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
 
         {error && (
-          <div className="mt-4 flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          <div className="mt-4 flex items-center gap-2.5 p-3.5 bg-background shadow-[var(--shadow-recessed)] border border-accent/20 rounded-xl text-xs font-mono font-bold text-accent">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 text-accent" />
             {error}
           </div>
         )}
 
-        <div className="flex gap-4 mt-6">
-          <button onClick={onClose} className="btn-secondary flex-1" disabled={uploading}>Cancel</button>
-          <button onClick={handleUpload} className="btn-primary flex-1 flex items-center justify-center gap-2" disabled={!file || uploading}>
-            {uploading ? <><Spinner size="sm" className="text-white" /> Processing...</> : 'Upload Note'}
+        <div className="flex gap-4 mt-8">
+          <button onClick={onClose} className="btn-secondary flex-1 text-xs" disabled={uploading}>ABORT</button>
+          <button onClick={handleUpload} className="btn-primary flex-1 text-xs flex items-center justify-center gap-2" disabled={!file || uploading}>
+            {uploading ? <><Spinner size="sm" className="text-white animate-spin" /> INJECTING...</> : 'EXECUTE UPLOAD'}
           </button>
         </div>
       </div>

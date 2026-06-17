@@ -7,6 +7,12 @@ import UploadModal from '../components/notes/UploadModal';
 import Spinner from '../components/ui/Spinner';
 import EmptyState from '../components/ui/EmptyState';
 
+const Screw = () => (
+  <div className="w-3 h-3 rounded-full bg-background border border-borderDark flex items-center justify-center shadow-[inset_1px_1px_2px_rgba(0,0,0,0.2),-1px_-1px_1px_rgba(255,255,255,0.7)] flex-shrink-0">
+    <div className="w-1.5 h-[1.2px] bg-borderDark/80 rotate-[45deg]" />
+  </div>
+);
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [notes, setNotes] = useState([]);
@@ -29,12 +35,12 @@ export default function Dashboard() {
   }, [fetchNotes]);
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this note?')) return;
+    if (!confirm('CONFIRM PERMANENT DELETE? THIS DOCUMENT WILL BE REMOVED FROM INTERNAL MEMORY.')) return;
     try {
       await deleteNote(id);
       setNotes((prev) => prev.filter((n) => n.id !== id));
     } catch (err) {
-      console.error('Failed to delete note:', err);
+      console.error('Failed to delete document:', err);
     }
   };
 
@@ -51,19 +57,33 @@ export default function Dashboard() {
   }, [notes, fetchNotes]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold font-heading text-white tracking-wide">Welcome back, {user?.name?.split(' ')[0]}</h1>
-          <p className="text-slate-400 mt-2">{notes.length} note{notes.length !== 1 ? 's' : ''} uploaded</p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in relative z-10">
+      
+      {/* Console Header Panel */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 bg-background shadow-[var(--shadow-card)] rounded-2xl border border-white/50 p-6 relative">
+        <div className="absolute top-3 left-3"><Screw /></div>
+        <div className="absolute top-3 right-3"><Screw /></div>
+        
+        <div className="pl-0 sm:pl-4">
+          <h1 className="text-xl font-bold tracking-tight text-foreground font-mono">
+            ACTIVE_USER: <span className="text-accent">{user?.name?.split(' ')[0]?.toUpperCase()}</span>
+          </h1>
+          <p className="stamped-label mt-1.5 flex items-center gap-1.5 select-none">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[var(--shadow-glow-green)] animate-pulse-fast" />
+            {notes.length} INDEXED RECORD{notes.length !== 1 ? 'S' : ''} AWAITING QUERY
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <button onClick={fetchNotes} className="btn-ghost p-2" title="Refresh">
+        <div className="flex items-center gap-3 pr-0 sm:pr-4">
+          <button 
+            onClick={fetchNotes} 
+            className="btn-secondary p-3 rounded-xl shadow-[var(--shadow-card)] border border-white/50" 
+            title="REFRESH LIST"
+          >
             <RefreshCw className="w-4 h-4" />
           </button>
-          <button onClick={() => setShowUpload(true)} className="btn-primary flex items-center gap-2">
+          <button onClick={() => setShowUpload(true)} className="btn-primary text-xs font-mono font-bold px-4 py-2.5">
             <Plus className="w-4 h-4" />
-            Upload Notes
+            INJECT NEW DATA
           </button>
         </div>
       </div>
@@ -75,17 +95,17 @@ export default function Dashboard() {
       ) : notes.length === 0 ? (
         <EmptyState
           icon={FileText}
-          title="No notes uploaded yet"
-          description="Upload your study notes to start asking questions and generating quizzes."
+          title="NO DOCUMENT RECORDS FOUND"
+          description="UPLOAD A PDF OR TXT DOCUMENT TO BEGIN SEARCH PROTOCOLS."
           action={
             <button onClick={() => setShowUpload(true)} className="btn-primary flex items-center gap-2">
               <Plus className="w-4 h-4" />
-              Upload Your First Note
+              INJECT FIRST NODE
             </button>
           }
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {notes.map((note) => (
             <NoteCard key={note.id} note={note} onDelete={handleDelete} />
           ))}

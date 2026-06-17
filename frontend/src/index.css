@@ -1,68 +1,99 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-shadow-dark: #babecc;
+  --color-shadow-light: #ffffff;
+  --color-ring: #ff4757;
+  
+  --shadow-card: 8px 8px 16px var(--color-shadow-dark), -8px -8px 16px var(--color-shadow-light);
+  --shadow-floating: 12px 12px 24px var(--color-shadow-dark), -12px -12px 24px var(--color-shadow-light), inset 1px 1px 0 rgba(255, 255, 255, 0.6);
+  --shadow-pressed: inset 6px 6px 12px var(--color-shadow-dark), inset -6px -6px 12px var(--color-shadow-light);
+  --shadow-recessed: inset 4px 4px 8px var(--color-shadow-dark), inset -4px -4px 8px var(--color-shadow-light);
+  --shadow-sharp: 4px 4px 8px rgba(0, 0, 0, 0.12), -1px -1px 1px rgba(255, 255, 255, 0.8);
+  --shadow-glow: 0 0 10px 2px rgba(255, 71, 87, 0.5);
+  --shadow-glow-green: 0 0 10px 2px rgba(34, 197, 94, 0.5);
+}
+
 body {
-  @apply bg-[#050505] text-slate-300 font-sans min-h-screen selection:bg-brand-500/30 selection:text-brand-200;
-  /* subtle dark grid background or radial gradient */
-  background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #050505 50%);
-  background-attachment: fixed;
+  @apply bg-background text-foreground font-sans min-h-screen selection:bg-accent/20 selection:text-accent relative overflow-x-hidden;
+}
+
+/* Micro-noise texture for matte industrial finish */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.045'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  @apply font-heading text-slate-100;
+  @apply font-bold tracking-tight text-foreground;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 @layer components {
-  /* GLASSSMORPHISM BASE */
-  .glass-panel {
-    @apply bg-[#111111]/70 backdrop-blur-xl border border-white/5 shadow-xl;
-  }
-
+  /* Dynamic Neumorphic Buttons */
   .btn-primary {
-    @apply relative overflow-hidden bg-brand-600 hover:bg-brand-500 text-white font-medium px-5 py-2.5 rounded-lg
-           transition-all duration-300 shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.6)]
-           active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed border border-brand-400/30;
+    @apply relative bg-accent text-white uppercase tracking-wider font-bold text-sm px-6 py-3 transition-all duration-150 rounded-xl shadow-[4px_4px_10px_rgba(166,50,60,0.25),-4px_-4px_10px_rgba(255,255,255,0.7)] hover:brightness-110 active:translate-y-[2px] active:shadow-[inset_4px_4px_8px_rgba(166,50,60,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.1)] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 flex items-center justify-center gap-2 border border-accent/10;
   }
   
   .btn-secondary {
-    @apply bg-[#1a1a2e] hover:bg-[#252542] text-slate-200 font-medium px-5 py-2.5 rounded-lg
-           border border-white/10 transition-all duration-300 hover:border-brand-500/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.15)]
-           active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply relative bg-background text-foreground uppercase tracking-wider font-bold text-sm px-6 py-3 transition-all duration-150 rounded-xl shadow-[var(--shadow-card)] hover:text-accent hover:bg-card active:translate-y-[2px] active:shadow-[var(--shadow-pressed)] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 flex items-center justify-center gap-2 border border-white/40;
   }
   
   .btn-ghost {
-    @apply text-slate-400 hover:text-brand-400 hover:bg-brand-500/10 font-medium px-4 py-2 rounded-lg
-           transition-all duration-300;
+    @apply text-mutedForeground hover:text-accent font-bold uppercase tracking-wider text-xs px-4 py-2.5 transition-all duration-150 rounded-lg hover:bg-card/50 active:shadow-[var(--shadow-recessed)] focus-visible:ring-2 focus-visible:ring-accent flex items-center justify-center gap-1.5;
   }
   
+  /* Recessed Inputs */
   .input-field {
-    @apply w-full px-4 py-3 rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm
-           text-slate-100 placeholder:text-slate-500
-           focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500
-           transition-all duration-300 shadow-inner;
+    @apply w-full px-5 py-3.5 bg-background text-foreground font-mono placeholder:text-mutedForeground/60 focus:outline-none focus:ring-0 transition-all duration-200 rounded-xl border-0 shadow-[var(--shadow-recessed)] focus:shadow-[var(--shadow-recessed),0_0_0_2px_rgba(255,71,87,0.3)];
+  }
+
+  /* Bolted Panels & Cards */
+  .panel-card {
+    @apply bg-background rounded-2xl shadow-[var(--shadow-card)] border border-white/50 p-6 transition-all duration-300;
   }
   
   .card {
-    @apply bg-[#111111]/80 backdrop-blur-md rounded-xl border border-white/5 
-           hover:border-brand-500/30 transition-all duration-300 relative overflow-hidden;
-  }
-  /* inner glow effect for cards */
-  .card::before {
-    content: '';
-    @apply absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 transition-opacity duration-300 pointer-events-none;
-  }
-  .card:hover::before {
-    @apply opacity-100;
+    @apply bg-background rounded-2xl shadow-[var(--shadow-card)] border border-white/40 p-6 transition-all duration-300 relative hover:-translate-y-0.5 hover:shadow-[var(--shadow-floating)];
   }
 
-  .gradient-text {
-    @apply bg-gradient-to-r from-brand-400 via-accent-300 to-brand-300 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(139,92,246,0.3)];
+  /* CRT Screen Visualization style */
+  .crt-screen {
+    @apply bg-black relative overflow-hidden rounded-lg shadow-[inset_0_4px_10px_rgba(0,0,0,0.8)];
+    background-image: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.35) 50%), linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06));
+    background-size: 100% 4px, 6px 100%;
+  }
+
+  /* Monospace Metadata stamped look */
+  .stamped-label {
+    @apply text-xs font-bold uppercase tracking-widest font-mono text-mutedForeground select-none;
   }
 }
 
 .skeleton {
-  @apply bg-white/5 rounded animate-pulse;
+  @apply bg-muted rounded-xl animate-pulse;
+}
+
+/* Scrollbar styling for industrial controls */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+*:focus-visible {
+  @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-background;
 }

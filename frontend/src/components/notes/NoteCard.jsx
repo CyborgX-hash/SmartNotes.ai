@@ -1,10 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import { FileText, Trash2, Clock, Layers, Loader2, AlertCircle } from 'lucide-react';
 
+const Screw = () => (
+  <div className="w-2.5 h-2.5 rounded-full bg-background border border-borderDark flex items-center justify-center shadow-[inset_1px_1px_2.5px_rgba(0,0,0,0.2)] flex-shrink-0">
+    <div className="w-1 h-[1px] bg-borderDark/70 rotate-[35deg]" />
+  </div>
+);
+
 const statusConfig = {
-  PROCESSING: { label: 'Processing', color: 'bg-amber-100 text-amber-700', icon: Loader2 },
-  READY: { label: 'Ready', color: 'bg-emerald-100 text-emerald-700', icon: null },
-  FAILED: { label: 'Failed', color: 'bg-red-100 text-red-700', icon: AlertCircle },
+  PROCESSING: { label: 'RUNNING', ledColor: 'bg-amber-500 shadow-[0_0_8px_1px_rgba(245,158,11,0.6)] animate-pulse-fast', icon: Loader2 },
+  READY: { label: 'READY', ledColor: 'bg-emerald-500 shadow-[var(--shadow-glow-green)]', icon: null },
+  FAILED: { label: 'FAIL', ledColor: 'bg-red-500 shadow-[var(--shadow-glow)]', icon: AlertCircle },
 };
 
 export default function NoteCard({ note, onDelete }) {
@@ -17,34 +23,49 @@ export default function NoteCard({ note, onDelete }) {
 
   return (
     <div
-      className="card p-5 cursor-pointer group"
+      className="card cursor-pointer group hover:bg-card/50 hover:shadow-[var(--shadow-floating)] active:translate-y-[1px] transition-all relative pt-8 pb-5 px-6 border border-white/40"
       onClick={() => note.status === 'READY' && navigate(`/notes/${note.id}`)}
     >
+      {/* Mini Screws in corners */}
+      <div className="absolute top-2.5 left-2.5"><Screw /></div>
+      <div className="absolute top-2.5 right-2.5"><Screw /></div>
+
       <div className="flex items-start justify-between mb-4">
-        <div className="w-12 h-12 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-          <FileText className="w-6 h-6 text-brand-400" />
+        {/* Recessed Icon Housing */}
+        <div className="w-11 h-11 bg-background shadow-[var(--shadow-recessed)] rounded-full flex items-center justify-center border border-white/20">
+          <FileText className="w-5 h-5 text-accent transition-transform duration-200 group-hover:scale-105" />
         </div>
         <button
           onClick={(e) => { e.stopPropagation(); onDelete(note.id); }}
-          className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all"
-          title="Delete note"
+          className="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-full bg-background flex items-center justify-center shadow-[var(--shadow-card)] border border-white/50 text-mutedForeground hover:text-accent active:translate-y-[1px] active:shadow-[var(--shadow-pressed)] transition-all z-10"
+          title="DELETE RECORD"
         >
-          <Trash2 className="w-4 h-4 text-red-400" />
+          <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      <h3 className="font-semibold text-white mb-1.5 truncate font-heading text-lg">{note.title}</h3>
-      <p className="text-sm text-slate-400 mb-4 truncate">{note.fileName}</p>
+      <h3 className="font-bold tracking-tight text-foreground text-base mb-1.5 truncate pr-4 group-hover:text-accent transition-colors font-mono">
+        {note.title.toUpperCase()}
+      </h3>
+      <p className="font-mono text-[11px] text-mutedForeground mb-5 truncate leading-none">
+        FILE: {note.fileName}
+      </p>
 
-      <div className="flex items-center justify-between mt-auto">
-        <div className="flex items-center gap-4 text-xs text-slate-500 font-medium">
-          <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" />{date}</span>
+      <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/20 select-none">
+        <div className="flex items-center gap-3.5 text-[10px] font-mono text-mutedForeground">
+          <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{date}</span>
           {note._count?.chunks > 0 && (
-            <span className="flex items-center gap-1.5"><Layers className="w-3.5 h-3.5" />{note._count.chunks} chunks</span>
+            <span className="flex items-center gap-1"><Layers className="w-3 h-3" />{note._count.chunks} BLK</span>
           )}
         </div>
-        <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1 ${status.color}`}>
-          {StatusIcon && <StatusIcon className="w-3 h-3 animate-spin" />}
+        
+        {/* LED Stamped Label */}
+        <span className="text-[9px] px-2.5 py-1 rounded bg-background shadow-[var(--shadow-sharp)] border border-white/30 font-mono font-bold text-mutedForeground tracking-widest flex items-center gap-1.5">
+          {StatusIcon ? (
+            <StatusIcon className="w-2.5 h-2.5 animate-spin text-amber-500" />
+          ) : (
+            <span className={`w-1.5 h-1.5 rounded-full ${status.ledColor} flex-shrink-0`} />
+          )}
           {status.label}
         </span>
       </div>
